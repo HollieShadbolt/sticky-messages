@@ -94,6 +94,7 @@ class Looper():
         success = response.status_code in [204, 404]
 
         if success:
+            self.message_ids[channel_id] = None
             logging.info("Deleted.")
         else:
             logging.error(response.content)
