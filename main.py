@@ -83,7 +83,7 @@ class Looper():
 
         self.sleep()
 
-        logging.info("Deleting Stick Message '%s'...", message_id)
+        logging.info("Deleting Sticky Message '%s'...", message_id)
 
         response = requests.delete(
             self.url.format(channel_id) + f"/{message_id}",
