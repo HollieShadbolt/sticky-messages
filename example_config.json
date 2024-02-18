@@ -1,13 +1,9 @@
 {
-    "client_id": "thiswillbewhereyourclientidgoes",
-    "token": "thiswillbewhereyourtokengoes",
-    "broadcaster_id": "64370289",
-    "moderator_id": "799181417",
-    "ignore_offline": false,
-    "announcements": [
-        "Announcement One",
-        "Announcement Two",
-        "Announcement Three"
-    ],
-    "interval": 1200
+    "token": "insertyourtokenhere",
+    "channels": {
+        "123456789012345678901": "Message One",
+        "123456789012345678902": "Message Two",
+        "123456789012345678903": "Message Three"
+        
+    }
 }
