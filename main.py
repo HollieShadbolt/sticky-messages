@@ -110,7 +110,7 @@ class Looper():
 
         return result
 
-    def sleep(self):
+    def sleep(self) -> None:
         """Sleep for Discord API."""
 
         time.sleep(1)
