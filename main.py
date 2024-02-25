@@ -38,7 +38,8 @@ class Looper():
 
         try:
             self.update(channel_id)
-        except requests.exceptions.Timeout as exception:
+        except (requests.exceptions.Timeout,
+                requests.exceptions.ConnectionError) as exception:
             logging.error(exception)
 
     def update(self, channel_id: str) -> None:
