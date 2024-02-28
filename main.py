@@ -12,12 +12,20 @@ import requests
 class Looper():
     """Looping class to continuously check for updates."""
 
-    def __init__(self, channels: typing.Dict[str, str], token: str) -> None:
+    def __init__(self,
+                 filename: str,
+                 channels: typing.Dict[str, str],
+                 token: str) -> None:
         self.url = "https://discordapp.com/api/channels/{}/messages"
-        self.message_ids = {channel: None for channel in channels}
         self.headers = {"Authorization": f"Bot {token}"}
         self.channels = channels
+        self.filename = filename
         self.timeout = 60
+
+        try:
+            self.message_ids = get_json(filename)
+        except FileNotFoundError:
+            self.message_ids = {channel: None for channel in channels}
 
     def run(self) -> None:
         """Main entry point."""
@@ -63,6 +71,7 @@ class Looper():
         message_id = response.json()["id"]
         logging.info("Created '%s'.", message_id)
         self.message_ids[channel_id] = message_id
+        self.update_json()
 
     def valid(self, channel_id: str) -> bool:
         """Does this Channel have a valid Sticky Message?"""
@@ -97,10 +106,17 @@ class Looper():
         if success:
             self.message_ids[channel_id] = None
             logging.info("Deleted.")
+            self.update_json()
         else:
             logging.error(response.content)
 
         return not success
+
+    def update_json(self) -> None:
+        """Write updated JSON to file."""
+
+        with get_file(self.filename, 'w') as file:
+            json.dump(self.message_ids, file)
 
     def not_ok(self, response: requests.Response) -> bool:
         """Is the Response not OK (200)?"""
@@ -115,7 +131,19 @@ class Looper():
     def sleep(self) -> None:
         """Sleep for Discord API."""
 
-        time.sleep(1)
+        time.sleep(2)
+
+
+def get_json(filename: str) -> typing.Any:
+    """Get JSON file contents."""
+
+    with get_file(filename) as file:
+        return json.load(file)
+
+
+def get_file(filename: str, mode: str = 'r') -> typing.IO[any]:
+    """Get a file stream."""
+    return open(filename, mode, encoding="utf-8")
 
 
 def main() -> None:
@@ -128,11 +156,7 @@ def main() -> None:
     )
 
     args = sys.argv
-
-    with open(args[1], encoding="utf-8") as file:
-        config = json.load(file)
-
-    Looper(**config).run()
+    Looper(args[2], **get_json(args[1])).run()
 
 
 if __name__ == '__main__':
